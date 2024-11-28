@@ -1,0 +1,59 @@
+services:
+  backend:
+    depends_on:
+      - zeo
+    environment:
+      # RELSTORAGE_DSN:
+      #   dbname='${DB_NAME:-plone}' user='${DB_USER:-plone}' host='${DB_HOST:-db}'
+      #   password='${DB_PASSWORD:-CTBolRnPQVoh}' port='${DB_PORT:-5432}'
+      ZEO_ADDRESS: zeo:8100
+      ZEO_SHARED_BLOB_DIR: true
+      ZOPE_FORM_MEMORY_LIMIT: 100MB
+      ZOPE_FORM_DISK_LIMIT: 100MB
+      ZOPE_FORM_MEMFILE_LIMIT: 100MB
+    volumes:
+      - ./data/zeo:/data
+
+    image: {{ cookiecutter.__container_image_prefix }}/backend:$VERSION
+    ports:
+      - 8080:8080
+  caddy:
+    image: caddy
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - ./conf/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+  frontend:
+    depends_on:
+      - backend
+    environment:
+      RAZZLE_API_PATH: https://{{cookiecutter.hostname}}
+      RAZZLE_INTERNAL_API_PATH: http://backend:8080/Plone
+
+    image: {{ cookiecutter.__container_image_prefix }}/frontend:$VERSION
+  zeo:
+    image: plone/plone-zeo:6.0.0
+    volumes:
+      - ./data/zeo:/data
+  nginx:
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      SERVER_DOMAIN: {{cookiecutter.hostname}}
+    image: nginx
+    volumes:
+      - ./conf/default.conf.template:/etc/nginx/templates/default.conf.template
+
+volumes:
+  caddy_config: null
+  caddy_data: null
+  vol-site-data:
+    driver_opts:
+      device: ./data/db/
+      o: bind
+      type: none
