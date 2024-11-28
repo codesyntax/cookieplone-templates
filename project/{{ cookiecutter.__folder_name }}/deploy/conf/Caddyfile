@@ -1,0 +1,24 @@
+{{ cookiecutter.hostname }}:443 {
+
+    # Set the backend server URL
+    reverse_proxy * http://nginx:80 {
+        header_up Host {http.request.host}
+        header_up X-Forwarded-Proto {http.request.scheme}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+    }
+
+    # Logging (optional)
+    log {
+        output stdout
+        format console
+    }
+
+    tls certs@codesyntax.com {
+        protocols tls1.3
+    }
+
+    # HSTS (63072000 seconds)
+    header Strict-Transport-Security "max-age=63072000"
+
+}

@@ -1,0 +1,69 @@
+# Reference SSL: https://mozilla.github.io/server-side-tls/ssl-config-generator/
+
+upstream frontendproxy {
+    server frontend:3000;
+}
+
+upstream backendproxy {
+    server backend:8080;
+}
+
+access_log  /var/log/nginx/access.log;
+error_log  /var/log/nginx/error.log;
+
+server {
+    listen 80;
+    server_name ${SERVER_DOMAIN};
+
+    add_header Referrer-Policy same-origin;
+
+    # Extra Headers
+    add_header X-Content-Type-Options nosniff;
+    add_header X-Frame-Options SAMEORIGIN always;
+
+    # Block pages from loading when they detect reflected XSS attacks
+    add_header X-XSS-Protection "1; mode=block";
+
+    client_max_body_size 20M;
+
+    location /.well-known/acme-challenge/ {
+        allow all;
+        root /var/www/certbot;
+    }
+
+    # return 301 https://$host$request_uri;
+    location ~ /api($|/.*) {
+        rewrite ^/api($|/.*) /VirtualHostBase/https/${SERVER_DOMAIN}:443/Plone/VirtualHostRoot/_vh_api$1 break;
+        proxy_pass http://backendproxy;
+        # Varnish
+        # proxy_pass http://varnishproxy;
+
+    }
+
+    location ~ /\+\+api\+\+($|/.*) {
+        rewrite ^/\+\+api\+\+($|/.*) /VirtualHostBase/https/${SERVER_DOMAIN}:443/Plone/++api++/VirtualHostRoot/$1 break;
+        proxy_pass http://backendproxy;
+        # Varnish
+        # proxy_pass http://varnishproxy;
+    }
+
+    location ~ / {
+        location ~* \.(js|jsx|css|less|swf|eot|ttf|otf|woff|woff2)$ {
+            add_header Cache-Control "public";
+            expires +1y;
+            proxy_pass http://frontendproxy;
+        }
+        location ~* static.*\.(ico|jpg|jpeg|png|gif|svg)$ {
+            add_header Cache-Control "public";
+            expires +1y;
+            proxy_pass http://frontendproxy;
+        }
+
+        proxy_set_header        Host $host;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_redirect http:// https://;
+        proxy_pass http://frontendproxy;
+    }
+}
