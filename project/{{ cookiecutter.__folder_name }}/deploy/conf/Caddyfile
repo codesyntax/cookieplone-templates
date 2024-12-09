@@ -15,10 +15,20 @@
     }
 
     tls certs@codesyntax.com {
-        protocols tls1.3
+        protocols tls 1.2 tls1.3
     }
 
     # HSTS (63072000 seconds)
     header Strict-Transport-Security "max-age=63072000"
 
 }
+
+# Adjust to remove the www or put it
+# {{ cookiecutter.hostname }}:443 {
+#
+#     tls certs@codesyntax.com {
+#         protocols tls1.2 tls1.3
+#     }
+#
+#     redir https://{{ cookiecutter.hostname }}{uri}
+# }
