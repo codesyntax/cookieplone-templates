@@ -15,7 +15,7 @@
     }
 
     tls certs@codesyntax.com {
-        protocols tls 1.2 tls1.3
+        protocols tls1.2 tls1.3
     }
 
     # HSTS (63072000 seconds)
