@@ -51,7 +51,10 @@ server {
         # proxy_pass http://varnishproxy;
     }
 
-    location ~ / {
+    location / {
+
+        # Comment this 2 sections when using Classic UI Plone
+
         location ~* \.(js|jsx|css|less|swf|eot|ttf|otf|woff|woff2)$ {
             add_header Cache-Control "public";
             expires +1y;
