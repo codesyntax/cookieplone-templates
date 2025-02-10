@@ -22,45 +22,50 @@ help: ## This help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 
-.PHONE: stop
+.PHONY: stop
 stop: ## Stop all services
 	@echo "$(RED) ===> Stopping"
 	docker compose down
 
-.PHONE: start
+.PHONY: start
 start: ## Start all services
 	docker compose up -d
 
-.PHONE: start-fg
+.PHONY: start-fg
 start-fg: ## Start in foreground
 	docker compose up
 
-.PHONE: restart
+.PHONY: restart
 restart: ## Restart all services
 	docker compose down
 	docker compose up -d
 
-.PHONE: restart-nginx
+.PHONY: restart-nginx
 restart-nginx: ## Restart nginx
 	docker compose down nginx
 	docker compose up nginx -d
 
-.PHONE: logs-nginx
+.PHONY: logs-nginx
 logs-nginx: ## Show nginx logs
 	docker compose logs -f nginx
 
-.PHONE: logs-backend
+.PHONY: logs-backend
 logs-backend: ## Show backend logs
 	docker compose logs -f backend
 
-.PHONE: upgrade
-upgrade: ## Download the new images and restart the services
+.PHONY: upgrade
+upgrade: crons ## Download the new images and restart the services
 	docker compose pull
 	docker compose down backend
 	docker compose up backend -d
 
-.PHONE: full-upgrade
-full-upgrade: ## Download the new images and restart the services
+.PHONY: full-upgrade
+full-upgrade: crons ## Download the new images and restart the services
 	docker compose pull
 	docker compose down
 	docker compose up -d
+
+.PHONY: crons
+crons: ## set all the cron jobs defined in crons.txt in the local crontab
+	( (crontab -l 2>/dev/null || true; cat crons.txt) | sort -u) | crontab -
+

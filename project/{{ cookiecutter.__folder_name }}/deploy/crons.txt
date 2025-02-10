@@ -1,0 +1,2 @@
+# Backend cron jobs
+@reboot cd /home/csmant/docker/deploy && make start
