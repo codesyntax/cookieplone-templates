@@ -45,6 +45,16 @@ restart-nginx: ## Restart nginx
 	docker compose down nginx
 	docker compose up nginx -d
 
+.PHONY: restart-frontend
+restart-frontend: ## Restart frontend
+	docker compose down frontend
+	docker compose up frontend -d
+
+.PHONY: restart-backend
+restart-backend: ## Restart backend
+	docker compose down backend
+	docker compose up backend -d
+
 .PHONY: logs-nginx
 logs-nginx: ## Show nginx logs
 	docker compose logs -f nginx
@@ -53,11 +63,17 @@ logs-nginx: ## Show nginx logs
 logs-backend: ## Show backend logs
 	docker compose logs -f backend
 
+.PHONY: logs-frontend
+logs-frontend: ## Show frontend logs
+	docker compose logs -f frontend
+
 .PHONY: upgrade
 upgrade: crons ## Download the new images and restart the services
 	docker compose pull
 	docker compose down backend
+	docker compose down frontend
 	docker compose up backend -d
+	docker compose up frontend -d
 
 .PHONY: full-upgrade
 full-upgrade: crons ## Download the new images and restart the services
