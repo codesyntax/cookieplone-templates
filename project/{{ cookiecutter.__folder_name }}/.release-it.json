@@ -32,6 +32,10 @@
           {
             "type": "chore",
             "section": "Maintenance"
+          },
+          {
+            "type": "internal",
+            "section": "Maintenance"
           }
         ]
       }
@@ -41,7 +45,7 @@
       "out": [
         "version.txt",
         "frontend/package.json",
-        "frontend/packages/volto-deporeibar/package.json",
+        "frontend/packages/{{ cookiecutter.__npm_package_name }}/package.json",
         "backend/setup.py",
         {
           "file": "deploy/.env",
