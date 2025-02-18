@@ -17,6 +17,11 @@ services:
     image: {{ cookiecutter.__container_image_prefix }}/backend:$VERSION
     ports:
       - 8080:8080
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://prometheus.codesyntax.com:3100/loki/api/v1/push"
+
   caddy:
     image: caddy
     ports:
@@ -27,6 +32,11 @@ services:
       - ./conf/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://prometheus.codesyntax.com:3100/loki/api/v1/push"
+
   frontend:
     depends_on:
       - backend
@@ -35,6 +45,11 @@ services:
       RAZZLE_INTERNAL_API_PATH: http://backend:8080/Plone
 
     image: {{ cookiecutter.__container_image_prefix }}/frontend:$VERSION
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://prometheus.codesyntax.com:3100/loki/api/v1/push"
+
   zeo:
     image: plone/plone-zeo:6.0.0
     volumes:
@@ -48,6 +63,11 @@ services:
     image: nginx
     volumes:
       - ./conf/default.conf.template:/etc/nginx/templates/default.conf.template
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://prometheus.codesyntax.com:3100/loki/api/v1/push"
+
 
 volumes:
   caddy_config: null
