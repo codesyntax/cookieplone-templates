@@ -69,6 +69,7 @@ logs-frontend: ## Show frontend logs
 
 .PHONY: upgrade
 upgrade: crons ## Download the new images and restart the services
+	git pull origin main
 	docker compose pull
 	docker compose down backend
 	docker compose down frontend
@@ -77,9 +78,17 @@ upgrade: crons ## Download the new images and restart the services
 
 .PHONY: full-upgrade
 full-upgrade: crons ## Download the new images and restart the services
+	git pull origin main
 	docker compose pull
 	docker compose down
 	docker compose up -d
+
+.PHONY: deploy
+deploy: upgrade
+
+.PHONE: self-upgrade
+self-upgrade:
+	wget https://github.com/codesyntax/cookieplone-templates/blob/codesyntax/project/%7B%7B%20cookiecutter.__folder_name%20%7D%7D/deploy/Makefile -O Makefile
 
 .PHONY: crons
 crons: ## set all the cron jobs defined in crons.txt in the local crontab
