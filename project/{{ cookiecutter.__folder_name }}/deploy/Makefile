@@ -83,6 +83,10 @@ full-upgrade: crons ## Download the new images and restart the services
 	docker compose down
 	docker compose up -d
 
+.PHONY: deploy
+deploy:
+	upgrade
+
 .PHONY: crons
 crons: ## set all the cron jobs defined in crons.txt in the local crontab
 	( (crontab -l 2>/dev/null || true; cat crons.txt) | sort -u) | crontab -
