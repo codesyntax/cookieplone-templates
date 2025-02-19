@@ -86,6 +86,9 @@ full-upgrade: crons ## Download the new images and restart the services
 .PHONY: deploy
 deploy: upgrade
 
+.PHONY: full-deploy
+full-deploy: full-upgrade
+
 .PHONE: self-upgrade
 self-upgrade:
 	wget https://raw.githubusercontent.com/codesyntax/cookieplone-templates/refs/heads/codesyntax/project/%7B%7B%20cookiecutter.__folder_name%20%7D%7D/deploy/Makefile -O Makefile
