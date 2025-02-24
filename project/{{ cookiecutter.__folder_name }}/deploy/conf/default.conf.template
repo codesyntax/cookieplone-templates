@@ -30,11 +30,6 @@ server {
 
     client_max_body_size 20M;
 
-    location /.well-known/acme-challenge/ {
-        allow all;
-        root /var/www/certbot;
-    }
-
     # return 301 https://$host$request_uri;
     location ~ /api($|/.*) {
         rewrite ^/api($|/.*) /VirtualHostBase/https/${SERVER_DOMAIN}:443/Plone/VirtualHostRoot/_vh_api$1 break;
@@ -51,7 +46,7 @@ server {
         # proxy_pass http://varnishproxy;
     }
 
-    location / {
+    location ~ / {
 
         # Comment this 2 sections when using Classic UI Plone
 
