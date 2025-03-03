@@ -21,6 +21,11 @@ YELLOW=`tput setaf 3`
 help: ## This help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+.PHONY: pull
+pull: ## git pull repo main branch
+	@echo "$(GREEN) ===> Pulling"
+	git pull origin main
+
 
 .PHONY: stop
 stop: ## Stop all services
@@ -68,8 +73,7 @@ logs-frontend: ## Show frontend logs
 	docker compose logs -f frontend
 
 .PHONY: upgrade
-upgrade: crons ## Download the new images and restart the services
-	git pull origin main
+upgrade: pull crons ## Download the new images and restart the services
 	docker compose pull
 	docker compose down backend
 	docker compose down frontend
@@ -77,8 +81,7 @@ upgrade: crons ## Download the new images and restart the services
 	docker compose up frontend -d
 
 .PHONY: full-upgrade
-full-upgrade: crons ## Download the new images and restart the services
-	git pull origin main
+full-upgrade: pull crons ## Download the new images and restart the services
 	docker compose pull
 	docker compose down
 	docker compose up -d
