@@ -1,2 +1,3 @@
 # Backend cron jobs
 @reboot cd /home/csmant/docker/deploy && make start
+@weekly cd /home/csmant/docker/deploy && /usr/bin/docker compose run backend pack
