@@ -11,6 +11,7 @@ services:
       ZOPE_FORM_MEMORY_LIMIT: 100MB
       ZOPE_FORM_DISK_LIMIT: 100MB
       ZOPE_FORM_MEMFILE_LIMIT: 100MB
+      CLIENT_HOME: /app/
     volumes:
       - ./data/zeo:/data
 
