@@ -55,6 +55,9 @@ services:
     image: plone/plone-zeo:6.0.0
     volumes:
       - ./data/zeo:/data
+    environment:
+      ZEO_PACK_KEEP_OLD: false
+
   nginx:
     depends_on:
       - backend
