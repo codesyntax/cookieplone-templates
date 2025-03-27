@@ -72,6 +72,17 @@ services:
       options:
         loki-url: "http://prometheus.codesyntax.com:3100/loki/api/v1/push"
 
+  #
+  # Uncomment if you want to have Varnish
+  #
+  # varnish:
+  #   ports:
+  #     - 8000:80
+  #   image: varnish:6.0
+  #   volumes:
+  #     - ./conf/varnish.vcl:/etc/varnish/default.vcl
+  #   depends_on:
+  #     - backend
 
 volumes:
   caddy_config: null
