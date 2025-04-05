@@ -8,9 +8,11 @@ upstream backendproxy {
     server backend:8080;
 }
 
-# upstream varnishproxy {
-#     server varnish;
-# }
+{%- if cookiecutter.devops_cache == '1' %}
+upstream varnishproxy {
+    server varnish;
+}
+{%- endif %}
 
 log_format proxied '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"';
 
@@ -37,17 +39,28 @@ server {
     # return 301 https://$host$request_uri;
     location ~ /api($|/.*) {
         rewrite ^/api($|/.*) /VirtualHostBase/https/${SERVER_DOMAIN}:443/Plone/VirtualHostRoot/_vh_api$1 break;
+        {%- if cookiecutter.devops_cache == '1' %}
+        # proxy_pass http://backendproxy;
+        # Varnish
+        proxy_pass http://varnishproxy;
+        {%- else -%}
         proxy_pass http://backendproxy;
         # Varnish
         # proxy_pass http://varnishproxy;
-
+        {%- endif %}
     }
 
     location ~ /\+\+api\+\+($|/.*) {
         rewrite ^/\+\+api\+\+($|/.*) /VirtualHostBase/https/${SERVER_DOMAIN}:443/Plone/++api++/VirtualHostRoot/$1 break;
+        {%- if cookiecutter.devops_cache == '1' %}
+        # proxy_pass http://backendproxy;
+        # Varnish
+        proxy_pass http://varnishproxy;
+        {%- else -%}
         proxy_pass http://backendproxy;
         # Varnish
         # proxy_pass http://varnishproxy;
+        {%- endif %}
     }
 
     location ~ / {
